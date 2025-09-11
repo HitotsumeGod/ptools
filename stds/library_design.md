@@ -1,5 +1,5 @@
 # PTOOLS Standards for C Program Design
-# # With a 'Program' Encapsulated in the Concept of the 'Project'
+## With a 'Program' Encapsulated in the Concept of the 'Project'
 
 Functions should always be prefixed according to their Scope of Operation.
 A Scope of Operation is the abstract 'area' within which a function operates
