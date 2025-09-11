@@ -14,10 +14,6 @@
 #ifndef __PTOOLS_TYPES_H__
 #define __PTOOLS_TYPES_H__
 
-#ifndef __PTOOLS_H__
-#error "DO NOT INCLUDE THIS FILE DIRECTLY; USE PTOOLS.H INSTEAD"
-#endif
-
 #include <stdint.h>
 
 typedef uint8_t     byte;
