@@ -12,9 +12,15 @@
 #ifndef __PTOOLS_ERRORS_H__
 #define __PTOOLS_ERRORS_H__
 
+#ifndef __PTOOLS_H__
+#error "DO NOT INCLUDE THIS FILE DIRECTLY; USE PTOOLS.H INSTEAD"
+#endif
+
 enum common_error {
         COMMON_BAD_ARGS_ERR,
         COMMON_MALLOC_ERR,
+        COMMON_REALLOC_ERR,
+        COMMON_PERMS_ERR
 }
 
 #endif //__PTOOLS_ERRORS_H__
