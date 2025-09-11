@@ -3,7 +3,7 @@ project(ptools
         VERSION 1.0        
         DESCRIPTION "tools for C projects"
         LANGUAGES C)
-set(SRC ${CMAKE_SOURCE_DIR}/src/main)
-set(DEPS ${CMAKE_SOURCE_DIR}/src/include)
+set(SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/main)
+set(DEPS ${CMAKE_CURRENT_SOURCE_DIR}/src/include)
 add_library(ptools STATIC ${SRC}/errors.c)
 target_include_directories(ptools PUBLIC ${DEPS})
