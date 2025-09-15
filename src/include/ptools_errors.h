@@ -62,11 +62,39 @@ enum common_error {
         COMMON_BIND_ERR,
         COMMON_SEND_ERR,
         COMMON_RECV_ERR,
-        COMMON_PROJECT_ERR
+        COMMON_PROJECT_ERR,
+        COMMON_EMPTY_ERR
 };
+
+/**
+ * struct errmsg provides a manner of backtracing errors with ptools.
+ * To implement, every function A ever called by the dependent project
+ * should return a pointer to a struct errmsg, and every function B checking
+ * a function A should construct a new struct errmsg with its own error details, 
+ * including most importantly the function_name string referring to function
+ * B's name, and add the returned struct errmsg from function A to the end of
+ * the new errmsg, thus forming a linked list. This can be repeated ad infinitum
+ * by an arbitrary number of function B's, which should eventually end up at
+ * a function C, or top-level function, being called from main(), which should then
+ * pass the linked list to ptools_handle_error() as described above. 
+ *
+ * To ensure coherency, a function A is always the one responsible for settings its
+ * next field to NULL.
+ *
+ * To add just a function name to the list without adding an errorcode, a function B
+ * should specify errcode.project_err / errcode.common_err as COMMON_EMPTY_ERR.
+ */
+struct errmsg {
+        union {
+         enum common_error common_err;
+         void *project_err;
+        } errcode;
+        char *function_name;
+        struct errmsg *next;
+}
 
 typedef char *(*project_handle_error)(void *);
 
-extern char *ptools_handle_error(enum common_error common, void *project, project_handle_error handler);
+extern char *ptools_handle_error(struct errmsg *backtrace, project_handle_error handler);
 
 #endif //__PTOOLS_ERRORS_H__
