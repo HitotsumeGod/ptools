@@ -4,7 +4,7 @@
  * ptools_errors uses C enumerations for its error handling.
  * A ptools_errors 'errorcode' is a member of an enum, denoted
  * by a short summary of its error-context, such as 
- * 'COMMON_BAD_ARGS_ERR' denoting an errorcode for an error caused 
+ * 'COMMON_BADARGS_ERR' denoting an errorcode for an error caused 
  * by incorrect values being passed to a function. This header file
  * defines one such collection of errorcodes: the enum common_error.
  * This enum contains within it errorcodes for errors likely to occur
@@ -23,7 +23,7 @@
  * When it comes to actually doing things with our errorcodes, the
  * API provides a nested-function design. Upon encountering an error,
  * a function ought make a call to ptools_handle_error(), supplying
- * the appropriate common_error errorcode (COMMON_PROJET_ERR if the
+ * the appropriate common_error errorcode (COMMON_PROJECT_ERR if the
  * error is a project-specific one). If the error is a common one,
  * the remaining two arguments may be left NULL. In this case, the
  * errorcode will be easily parsed, and the function will return a
@@ -53,7 +53,8 @@
 #ifndef __PTOOLS_ERRORS_H__
 #define __PTOOLS_ERRORS_H__
 
-#define ERRMSGMAX   240
+#define ERRMSGMAX       2400
+#define FUNCNAMEMAX     40
 
 enum common_error {
         COMMON_BADARGS_ERR,
@@ -63,11 +64,13 @@ enum common_error {
         COMMON_SEND_ERR,
         COMMON_RECV_ERR,
         COMMON_PROJECT_ERR,
-        COMMON_EMPTY_ERR
+        COMMON_EMPTY_ERR,
+        COMMON_SUCCESS_ERR
 };
 
 /**
  * struct errmsg provides a manner of backtracing errors with ptools.
+ * 
  * To implement, every function A ever called by the dependent project
  * should return a pointer to a struct errmsg, and every function B checking
  * a function A should construct a new struct errmsg with its own error details, 
@@ -85,13 +88,13 @@ enum common_error {
  * should specify errcode.project_err / errcode.common_err as COMMON_EMPTY_ERR.
  */
 struct errmsg {
-        union {
+        struct {
          enum common_error common_err;
          void *project_err;
         } errcode;
         char *function_name;
         struct errmsg *next;
-}
+};
 
 typedef char *(*project_handle_error)(void *);
 
