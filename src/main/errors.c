@@ -1,4 +1,5 @@
 #include "ptools.h"
+#include <stdio.h>
 #include <string.h>
 #include <errno.h>
 
@@ -6,10 +7,10 @@ char *ptools_handle_error(enum common_error cerr, void *perr, project_handle_err
 {
         static char res[ERRMSGMAX];
 
-        for (int i = 0; i < sizeof(res), i++)
+        for (int i = 0; i < sizeof(res); i++)
                 res[i] = 0;
         switch (cerr) {
-        case COMMON_BAD_ARGS_ERR:
+        case COMMON_BADARGS_ERR:
                 snprintf(res, sizeof(res), "function was passed bad arguments");
                 break;
         case COMMON_MALLOC_ERR:

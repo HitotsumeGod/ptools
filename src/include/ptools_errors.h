@@ -53,7 +53,7 @@
 #ifndef __PTOOLS_ERRORS_H__
 #define __PTOOLS_ERRORS_H__
 
-#define ERRMSGLIM   240
+#define ERRMSGMAX   240
 
 enum common_error {
         COMMON_BADARGS_ERR,
@@ -61,7 +61,7 @@ enum common_error {
         COMMON_SOCKET_ERR,
         COMMON_BIND_ERR,
         COMMON_SEND_ERR,
-        COMMON_RECV_ERR
+        COMMON_RECV_ERR,
         COMMON_PROJECT_ERR
 };
 
