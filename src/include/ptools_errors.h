@@ -20,40 +20,59 @@
  * at definition, there is no way to declare a generic project-error
  * enum here and allow its modification by the parent project, which
  * is why the API is how it is. 
- * When it comes to actually doing things with our errorcodes, the
- * API provides a nested-function design. Upon encountering an error,
- * a function ought make a call to ptools_handle_error(), supplying
- * the appropriate common_error errorcode (COMMON_PROJECT_ERR if the
- * error is a project-specific one). If the error is a common one,
- * the remaining two arguments may be left NULL. In this case, the
- * errorcode will be easily parsed, and the function will return a
- * human-readable string providing a more detailed explanation of
- * the error-context, to be printed for a debugger's use. If a project-
- * specific error has occured, however, COMMON_PROJECT_ERR should be
- * set as the common_error, and the specific project errorcode should
- * be cast to a void pointer and passed as the second argument to 
- * ptools_handle_error(). The final argument is then a callback function
- * defined by the parent project in the format specified within this API,
- * which ptools_handle_error() will then use to parse the project-specific
- * errorcode. This callback function ought be designed in a very similar
- * way to ptools_handle_error() itself, and an example of such is included
- * within this repository, within 'examples/errorhandler.c'. 
- * As an example:
- * ------------------------------------------------------------------------------------
- * 1. Project error occurs (sample project errorcode: MYPROJECT_NONIC_ERR)
- * 2. Project calls ptools_handle_error(COMMON_PROJECT_ERROR, (void *) &MYPROJECT_NONIC_ERR, myproject_handler).
- * 3. ptools_handle_error() switches to case COMMON_PROJECT_ERROR, and so calls myproject_handler() with the void-cast MYPROJECT_NONIC_ERR.
- * 4. myproject_handler() uncasts the void pointer, and then switches to the appropriate case.
- * 5. myproject_handler() sets its result string to the descriptive error string associated with the errorcode, and returns to ptools_handle_error().
- * 6. ptools_handle_error() sets its result string to that returned by myproject_handler(), and returns to the project
- * 7. Project-defined implementation, probably printing the errorstring to stderr.
- * ------------------------------------------------------------------------------------
+ *
+ * Easily the most useful tool in program debugging is the backtrace,
+ * which supplies the debugger with a chronological sequence of error
+ * events, making it far easier to determine where a particular bug
+ * occurred and how it might be resolved. In the effort of
+ * incorporating this essentially tool into the fabric of ptools' error
+ * handling, the struct errmsg was designed. errmsg structs are designed
+ * to be individual entries in a linked list, which, you may notice, is the
+ * natural representation of a chronological collection, useful for backtracing.
+ * In properly implementing ptools' error handling, EVERY SINGLE function
+ * designed by the dependent project ought return a pointer to a struct errmsg;
+ * this is the entry point to a linked list, as mentioned before, which allows
+ * functions to collect errorcodes and messages occuring within nested functions,
+ * and return them in a coherent form for processing. This processing, then, is
+ * handled via the ptools_handle_error() function, which takes as its arguments
+ * a struct errmsg pointer (the linked list) and a project_handle_error callback,
+ * whose implementation is reliant upon the dependant project. A prototype is provided
+ * in /examples/errorhandler.c. This callback need provide only a single service: the
+ * translation of project-specific errcodes into robust, detailed error messages.
+ * To illustrate all of these parts at work, the following example is provided:
+ * ----------------------------------------------------------------------------
+ * 1. main() calls the function do_big_thing().
+ * 2. do_big_thing() calls the function do_small_thing().
+ * 3. do_small_thing() encounters an error. It thus builds a struct errmsg, with
+ *        errcode.common_err = COMMON_PROJECT_ERR and errcode.project_err = 
+ *        PROJECT_EXAMPLE_ERR. It then sets function_name to do_small_thing()
+ *        and null-terminates its next field, finally returning the errmsg.
+ * 4. do_big_thing(), upon realizing that do_small_thing() encountered an error
+ *        (which it realizes by checking the errmsg's errcode.common_err for
+ *        COMMON_SUCCESS_ERR), constructs a struct errmsg in much the same way
+ *        as Step 3, besides setting its errcode.project_err to something along
+ *        the lines of PROJECT_DOSMALLTHING_ERR, thus providing what information
+ *        it knows and allowing do_small_thing() itself to elucidate the situation
+ *        with its own errmsg, AND attaching itself to the end of do_small_thing()'s 
+ *        errmsg, thus starting a linked list that crucially begins at the point
+ *        of error FURTHEST from the original caller (main()). It then returns
+ *        the errmsg list.
+ * 5. main(), upon realizing that do_big_thing() encountered an error, passes
+ *        the entire errmsg list, which in C is beautifully encapsulated into a
+ *        single struct pointer, to ptools_handle_error().
+ * 6. ptools_handle_error() then iterates over each item in the linked list, and either:
+ *        - translates the errorcode to an errormsg in-function, if the code is a COMMON one
+ *        - retrieves an errormsg via a call to the project-implemented handler, passing
+ *                  the errmsg's errcode.project_err.
+ *        each errormsg is added to a single large string, which is then finally passed
+ *        back to main() to be printed to stderr, written to a log file, etc, etc.
+ * ------------------------------------------------------------------------------
 */
 
 #ifndef __PTOOLS_ERRORS_H__
 #define __PTOOLS_ERRORS_H__
 
-#define ERRMSGMAX       2400
+#define ERRMSGMAX       240
 #define FUNCNAMEMAX     40
 
 enum common_error {
@@ -68,25 +87,6 @@ enum common_error {
         COMMON_SUCCESS_ERR
 };
 
-/**
- * struct errmsg provides a manner of backtracing errors with ptools.
- * 
- * To implement, every function A ever called by the dependent project
- * should return a pointer to a struct errmsg, and every function B checking
- * a function A should construct a new struct errmsg with its own error details, 
- * including most importantly the function_name string referring to function
- * B's name, and add the returned struct errmsg from function A to the end of
- * the new errmsg, thus forming a linked list. This can be repeated ad infinitum
- * by an arbitrary number of function B's, which should eventually end up at
- * a function C, or top-level function, being called from main(), which should then
- * pass the linked list to ptools_handle_error() as described above. 
- *
- * To ensure coherency, a function A is always the one responsible for settings its
- * next field to NULL.
- *
- * To add just a function name to the list without adding an errorcode, a function B
- * should specify errcode.project_err / errcode.common_err as COMMON_EMPTY_ERR.
- */
 struct errmsg {
         struct {
          enum common_error common_err;
