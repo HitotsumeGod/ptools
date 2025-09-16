@@ -72,32 +72,22 @@
 #ifndef __PTOOLS_ERRORS_H__
 #define __PTOOLS_ERRORS_H__
 
-#define ERRMSGMAX       240
+#define ERRMSGMAX       2400
 #define FUNCNAMEMAX     40
 
-enum common_error {
-        COMMON_BADARGS_ERR,
-        COMMON_MALLOC_ERR,
-        COMMON_SOCKET_ERR,
-        COMMON_BIND_ERR,
-        COMMON_SEND_ERR,
-        COMMON_RECV_ERR,
-        COMMON_PROJECT_ERR,
-        COMMON_EMPTY_ERR,
-        COMMON_SUCCESS_ERR
+#define FILL_ERREP(rep, caller, msg)                                    \
+        if ((rep = malloc(sizeof(struct errep))) == NULL)               \
+        rep -> caller = caller;                                         \
+        rep -> msg = msg;                                               \
+        rep -> next = NULL;                                             
+
+//short for 'error_report'
+struct errep {
+        char *caller;
+        char *msg;
+        struct errep *next;
 };
 
-struct errmsg {
-        struct {
-         enum common_error common_err;
-         void *project_err;
-        } errcode;
-        char *function_name;
-        struct errmsg *next;
-};
-
-typedef char *(*project_handle_error)(void *);
-
-extern char *ptools_handle_error(struct errmsg *backtrace, project_handle_error handler);
+extern char *ptools_format_errors(struct errep *linked_list);
 
 #endif //__PTOOLS_ERRORS_H__
