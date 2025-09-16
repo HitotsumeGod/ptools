@@ -5,5 +5,5 @@ project(ptools
         LANGUAGES C)
 set(SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/main)
 set(DEPS ${CMAKE_CURRENT_SOURCE_DIR}/src/include)
-add_library(ptools STATIC ${SRC}/errors.c)
+add_library(ptools STATIC ${SRC}/ptools_errors.c)
 target_include_directories(ptools PUBLIC ${DEPS})

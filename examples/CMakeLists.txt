@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.15...4.00)
+project(ptools_examples LANGUAGES C)
+add_subdirectory(${CMAKE_SOURCE_DIR}/../ ${CMAKE_SOURCE_DIR}/../build)
+add_executable(ptools_examples ptools_errors_ex.c)
+target_include_directories(ptools_examples PRIVATE ${CMAKE_SOURCE_DIR}/../src/include)
+target_link_libraries(ptools_examples ptools)

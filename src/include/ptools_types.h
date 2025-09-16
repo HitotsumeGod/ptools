@@ -15,6 +15,7 @@
 #define __PTOOLS_TYPES_H__
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef uint8_t     byte;
 typedef uint16_t    word;
