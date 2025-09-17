@@ -14,7 +14,10 @@ char *ptools_format_errors(struct errep *list)
         while (list) {
                 strncat(res, list -> caller, sizeof(res) - strlen(res));
                 res[strlen(res)] = '\n';
-                strncat(res, list -> msg, sizeof(res) - strlen(res));
+                if (!list -> msg)
+                        strncat(res, "function was completed successfully", sizeof(res) - strlen(res));
+                else
+                        strncat(res, list -> msg, sizeof(res) - strlen(res));
                 res[strlen(res)] = '\n';
                 old = list;
                 list = list -> next;

@@ -10,7 +10,6 @@
 
 #define ERRMSGMAX       2400
 #define FUNCNAMEMAX     40
-#define ERREP_SUCCESS   "function completed successfully"
 #define FILL_ERREP_ERR  "FILL_ERREP failed; system memory critical"
 
 #define FILL_ERREP(rep, func, err)                                    \
