@@ -9,9 +9,35 @@
 #ifndef __UNET_H__
 #define __UNET_H__
 
-#include <netinet/ether.h>
-#include <netinet/ip.h>
-#include <net/if_arp.h>
+#include "types.h"
+
+struct ieee_8023_hdr {
+        byte        src_addr[6];
+        byte        dest_addr[6];
+        word        length;
+};
+
+struct etherii_hdr {
+        byte        src_addr[6];
+        byte        dest_addr[6];
+        word        ethertype;
+};
+
+struct ip_hdr {
+        byte        version:4;
+        byte        ihl:4;
+        byte        tos;
+        word        tot_len;
+        word        id;
+        byte        flags:3;
+        byte        frag_off1:5;
+        byte        frag_off2;
+        byte        ttl;
+        byte        protocol;
+        word        cksum;
+        dword       src_addr;
+        dword       dest_addr;
+};
 
 struct network_dgram {
         union {
