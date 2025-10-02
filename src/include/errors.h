@@ -2,8 +2,8 @@
  * Error handling API for peter projects.
 */
 
-#ifndef __PTOOLS_ERRORS_H__
-#define __PTOOLS_ERRORS_H__
+#ifndef __ERRORS_H__
+#define __ERRORS_H__
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,4 +27,4 @@ struct errep {
 
 extern char *ptools_format_errors(struct errep *linked_list);
 
-#endif //__PTOOLS_ERRORS_H__
+#endif //__ERRORS_H__

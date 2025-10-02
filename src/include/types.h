@@ -11,8 +11,8 @@
  * (including for loops, for god's sake!)
  */
 
-#ifndef __PTOOLS_TYPES_H__
-#define __PTOOLS_TYPES_H__
+#ifndef __TYPES_H__
+#define __TYPES_H__
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -26,4 +26,4 @@ typedef int16_t     s_word;
 typedef int32_t     s_dword;
 typedef int64_t     s_qword;
 
-#endif //_PTOOLS_TYPES_H__
+#endif //__TYPES_H__
