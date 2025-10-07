@@ -26,4 +26,6 @@ typedef int16_t     s_word;
 typedef int32_t     s_dword;
 typedef int64_t     s_qword;
 
+typedef int	    socket_t;
+
 #endif //__TYPES_H__
