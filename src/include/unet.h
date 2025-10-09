@@ -11,7 +11,6 @@
 
 #include "types.h"
 #include "unet/ethernet.h"
-#include "unet/wireless.h"
 #include "unet/ipv6.h"
 
 struct network_dgram {
