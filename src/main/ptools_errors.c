@@ -1,6 +1,20 @@
 #include "ptools.h"
 #include <string.h>
 
+bool ptools_is_error(struct errep *list)
+{
+        if (!list)
+                return true;
+        list -> err ? return true : return false;
+}
+
+byte ptools_get_enumcode(struct errep *list)
+{
+        if (!list)
+                return 0;
+        return list -> report.res;
+}
+
 char *ptools_format_errors(struct errep *list)
 {
         static char res[ERRMSGMAX * 10];
@@ -14,10 +28,7 @@ char *ptools_format_errors(struct errep *list)
         while (list) {
                 strncat(res, list -> caller, sizeof(res) - strlen(res));
                 res[strlen(res)] = '\n';
-                if (!list -> msg)
-                        strncat(res, "function was completed successfully", sizeof(res) - strlen(res));
-                else
-                        strncat(res, list -> msg, sizeof(res) - strlen(res));
+                strncat(res, list -> report.errmsg, sizeof(res) - strlen(res));
                 res[strlen(res)] = '\n';
                 old = list;
                 list = list -> next;
