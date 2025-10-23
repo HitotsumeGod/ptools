@@ -5,7 +5,7 @@ bool ptools_is_error(struct errep *list)
 {
         if (!list)
                 return true;
-        list -> err ? return true : return false;
+        return list -> is_error;
 }
 
 byte ptools_get_enumcode(struct errep *list)

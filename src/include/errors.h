@@ -36,6 +36,8 @@ struct errep {
         struct errep         *next;
 };
 
+extern bool ptools_is_error(struct errep *linked_list);
+extern byte ptools_get_enumcode(struct errep *linked_list);
 extern char *ptools_format_errors(struct errep *linked_list);
 
 #endif //__ERRORS_H__
